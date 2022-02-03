@@ -64,13 +64,15 @@ describe("Token contract", function () {
     it("Should transfer tokens between accounts", async function () {
       // Transfer 50 tokens from owner to addr1
       await hardhatToken.transfer(addr1.address, 50);
-      const addr1Balance = await hardhatToken.balanceOf(addr1.address);
+      let addr1Balance = await hardhatToken.balanceOf(addr1.address);
       expect(addr1Balance).to.equal(50);
 
       // Transfer 50 tokens from addr1 to addr2
       // We use .connect(signer) to send a transaction from another account
       await hardhatToken.connect(addr1).transfer(addr2.address, 50);
+      addr1Balance = await hardhatToken.balanceOf(addr1.address);
       const addr2Balance = await hardhatToken.balanceOf(addr2.address);
+      expect(addr1Balance).to.equal(0);
       expect(addr2Balance).to.equal(50);
     });
 
