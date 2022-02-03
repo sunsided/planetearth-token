@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/sunsided/planetearth-token/issues"
   },
-  "homepage": "https://github.com/sunsided/planetearth-token#readme"
+  "homepage": "https://github.com/sunsided/planetearth-token#readme",
+  "devDependencies": {
+    "hardhat": "^2.8.3"
+  }
 }
