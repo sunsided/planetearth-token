@@ -14,6 +14,17 @@ npx hardhat compile
 npx hardhat clean
 npx hardhat test
 npx hardhat node
-node scripts/sample-script.js
 npx hardhat help
 ```
+
+## Deploying the contract
+
+### Hardhat test network
+
+```console
+$ npx hardhat run scripts/deploy.js
+```
+
+### To a live network (e.g. Rinkeby)
+
+See [Deploying to a live network](https://hardhat.org/tutorial/deploying-to-a-live-network.html).
