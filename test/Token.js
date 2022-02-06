@@ -5,19 +5,7 @@ const { ethers } = require("hardhat");
 // not actually needed, but having your tests organized makes debugging them
 // easier. All Mocha functions are available in the global scope.
 
-// `describe` receives the name of a section of your test suite, and a callback.
-// The callback must define the tests of that section. This callback can't be
-// an async function.
 describe("Token contract", function () {
-  // Mocha has four functions that let you hook into the the test runner's
-  // lifecyle. These are: `before`, `beforeEach`, `after`, `afterEach`.
-
-  // They're very useful to setup the environment for tests, and to clean it
-  // up after they run.
-
-  // A common pattern is to declare some variables, and assign them in the
-  // `before` and `beforeEach` callbacks.
-
   let Token;
   let hardhatToken;
   let owner;
@@ -41,7 +29,8 @@ describe("Token contract", function () {
 
   describe("Deployment", function () {
     it("sets the right owner", async function () {
-      expect(await hardhatToken.owner()).to.equal(owner.address);
+      expect(await hardhatToken.owner()).to.equal(owner.address); // Ownable version
+      expect(await hardhatToken.getOwner()).to.equal(owner.address); // BEP20 version
     });
 
     it("assigns the total supply of tokens to the owner", async function () {
@@ -50,7 +39,22 @@ describe("Token contract", function () {
     });
   });
 
-  describe("Transactions", function () {
+  describe("transferOwnership()", function () {
+    it("transfers the owner to the new address", async function () {
+      expect(hardhatToken.transferOwnership(addr1.address))
+          .to.emit(hardhatToken, "OwnershipTransferred")
+          .withArgs(owner.address, addr1.address);
+      expect(await hardhatToken.owner()).to.equal(addr1.address);
+    });
+
+    it("fails when non-owner transfers ownership", async function () {
+      expect(hardhatToken.connect(addr1).transferOwnership(addr2.address))
+          .to.be.revertedWith("Ownable: caller is not the owner");
+      expect(await hardhatToken.owner()).to.equal(owner.address);
+    });
+  });
+
+  describe("transfer()", function () {
     it("transfers tokens between accounts", async function () {
       // Transfer 50 tokens from owner to addr1
       await hardhatToken.transfer(addr1.address, 50);
@@ -90,11 +94,11 @@ describe("Token contract", function () {
 
     it('reverts when transferring tokens to the zero address', async function () {
       // Owner can't send tokens to null address.
-      await expect(hardhatToken.transfer(ethers.constants.AddressZero, 50))
+      expect(hardhatToken.transfer(ethers.constants.AddressZero, 50))
           .to.be.revertedWith("ERC20: transfer to the zero address");
 
       // Regular holder can't send tokens to null address.
-      await expect(hardhatToken.connect(addr1).transfer(ethers.constants.AddressZero, 50))
+      expect(hardhatToken.connect(addr1).transfer(ethers.constants.AddressZero, 50))
           .to.be.revertedWith("ERC20: transfer to the zero address");
     });
   });

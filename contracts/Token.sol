@@ -12,4 +12,9 @@ contract Token is IBEP20, ERC20, Ownable {
     constructor(uint256 initialSupply) ERC20("One Planet Earth", "PLANETEARTH") Ownable() {
         _mint(msg.sender, initialSupply);
     }
+
+    // BEP20: Wrapper around Ownable.owner()
+    function getOwner() external view returns (address) {
+        return owner();
+    }
 }

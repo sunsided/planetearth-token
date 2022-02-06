@@ -6,8 +6,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // https://github.com/binance-chain/bsc-genesis-contract/blob/v1.0.3/contracts/interface/IBEP20.sol
 interface IBEP20 is IERC20 {
-    // Already OpenZeppelin's Ownable.sol
-    // function getOwner() external view returns (address);
+    /**
+      * @dev Returns the bep token owner.
+     */
+    function getOwner() external view returns (address);
 
     // Already in IBEP20
     // function balanceOf(address account) external view returns (uint256);
