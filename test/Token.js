@@ -40,6 +40,11 @@ describe("Token contract", function () {
   });
 
   describe("Deployment", function () {
+    // If the callback function is async, Mocha will `await` it.
+    it("Should set the right owner", async function () {
+      expect(await hardhatToken.owner()).to.equal(owner.address);
+    });
+
     it("Should assign the total supply of tokens to the owner", async function () {
       const ownerBalance = await hardhatToken.balanceOf(owner.address);
       expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
