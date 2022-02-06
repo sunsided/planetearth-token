@@ -13,6 +13,11 @@ describe("Token contract", function () {
   let addr2;
   let addrs;
 
+  const onePlanet = ethers.utils.parseEther("1.0");
+  const halfAPlanet = ethers.utils.parseEther("0.5");
+  const quarterOfAPlanet = ethers.utils.parseEther("0.25");
+  const oneTrillionthOfAPlanet = ethers.constants.One;
+
   // `beforeEach` will run before each test, re-deploying the contract every
   // time. It receives a callback, which can be async.
   beforeEach(async function () {
@@ -24,7 +29,7 @@ describe("Token contract", function () {
     // To deploy our contract, we just have to call tokenContractFactory.deploy() and await
     // for it to be deployed(), which happens once its transaction has been
     // mined.
-    token = await tokenContractFactory.deploy(1000);
+    token = await tokenContractFactory.deploy(onePlanet);
   });
 
   describe("Deployment", function () {
@@ -56,25 +61,25 @@ describe("Token contract", function () {
 
   describe("transfer()", function () {
     it("transfers tokens between accounts", async function () {
-      // Transfer 50 tokens from owner to addr1
-      await token.transfer(addr1.address, 50);
+      // Transfer some tokens from owner to addr1
+      await token.transfer(addr1.address, quarterOfAPlanet);
       let addr1Balance = await token.balanceOf(addr1.address);
-      expect(addr1Balance).to.equal(50);
+      expect(addr1Balance).to.equal(quarterOfAPlanet);
 
-      // Transfer 50 tokens from addr1 to addr2
+      // Transfer some tokens from addr1 to addr2
       // We use .connect(signer) to send a transaction from another account
-      await token.connect(addr1).transfer(addr2.address, 50);
+      await token.connect(addr1).transfer(addr2.address, quarterOfAPlanet);
 
-      expect(await token.balanceOf(addr1.address)).to.equal(0);
-      expect(await token.balanceOf(addr2.address)).to.equal(50);
+      expect(await token.balanceOf(addr1.address)).to.equal(ethers.constants.Zero);
+      expect(await token.balanceOf(addr2.address)).to.equal(quarterOfAPlanet);
     });
 
     it("fails if sender doesn’t have enough tokens", async function () {
       const initialOwnerBalance = await token.balanceOf(owner.address);
 
-      // Try to send 1 token from addr1 (0 tokens) to owner (1000000 tokens).
+      // Try to tokens from addr1 (0 tokens) to owner (all tokens).
       // `require` will evaluate false and revert the transaction.
-      await expect(token.connect(addr1).transfer(owner.address, 1))
+      await expect(token.connect(addr1).transfer(owner.address, oneTrillionthOfAPlanet))
           .to.be.revertedWith("ERC20: transfer amount exceeds balance");
 
       // Owner balance shouldn't have changed.
@@ -84,21 +89,21 @@ describe("Token contract", function () {
     it("updates balances after transfers", async function () {
       const initialOwnerBalance = await token.balanceOf(owner.address);
 
-      await token.transfer(addr1.address, 100);
-      await token.transfer(addr2.address, 50);
+      await token.transfer(addr1.address, halfAPlanet);
+      await token.transfer(addr2.address, quarterOfAPlanet);
 
-      expect(await token.balanceOf(owner.address)).to.equal(initialOwnerBalance.sub(150));
-      expect(await token.balanceOf(addr1.address)).to.equal(100);
-      expect(await token.balanceOf(addr2.address)).to.equal(50);
+      expect(await token.balanceOf(owner.address)).to.equal(initialOwnerBalance.sub(quarterOfAPlanet.add(halfAPlanet)));
+      expect(await token.balanceOf(addr1.address)).to.equal(halfAPlanet);
+      expect(await token.balanceOf(addr2.address)).to.equal(quarterOfAPlanet);
     });
 
     it('reverts when transferring tokens to the zero address', async function () {
       // Owner can't send tokens to null address.
-      expect(token.transfer(ethers.constants.AddressZero, 50))
+      expect(token.transfer(ethers.constants.AddressZero, quarterOfAPlanet))
           .to.be.revertedWith("ERC20: transfer to the zero address");
 
       // Regular holder can't send tokens to null address.
-      expect(token.connect(addr1).transfer(ethers.constants.AddressZero, 50))
+      expect(token.connect(addr1).transfer(ethers.constants.AddressZero, quarterOfAPlanet))
           .to.be.revertedWith("ERC20: transfer to the zero address");
     });
   });
