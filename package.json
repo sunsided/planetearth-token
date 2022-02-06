@@ -4,7 +4,10 @@
   "description": "The $PLANETEARTH token on Ethereum-like blockchains.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "npx hardhat clean",
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "test:coverage": "npx hardhat coverage"
   },
   "repository": {
     "type": "git",
@@ -28,6 +31,7 @@
     "chai": "^4.3.6",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.4",
-    "hardhat": "^2.8.3"
+    "hardhat": "^2.8.3",
+    "solidity-coverage": "^0.7.18"
   }
 }
