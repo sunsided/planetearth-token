@@ -2,7 +2,7 @@
   "name": "planetearth-token",
   "version": "0.1.0",
   "description": "The $PLANETEARTH token on Ethereum-like blockchains.",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "clean": "npx hardhat clean",
     "compile": "npx hardhat compile",
