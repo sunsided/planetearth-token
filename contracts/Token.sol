@@ -3,15 +3,21 @@ pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./IBEP20.sol";
 
-contract Token is IBEP20, ERC20, Ownable {
+contract Token is ERC20Capped, ERC20Burnable, IBEP20, Ownable {
     uint8 private constant _decimals = 18;
     uint256 private constant _maximumSupply = 1 * 10**_decimals;
 
-    constructor(uint256 initialSupply) ERC20("One Planet Earth", "PLANETEARTH") Ownable() {
+    constructor(uint256 initialSupply)
+        ERC20("One Planet Earth", "PLANETEARTH")
+        Ownable()
+        ERC20Capped(_maximumSupply)
+    {
         _mint(msg.sender, initialSupply);
     }
 
@@ -37,18 +43,10 @@ contract Token is IBEP20, ERC20, Ownable {
         return _decimals;
     }
 
-    /** @dev Creates `amount` tokens and assigns them to `account`, increasing
-     * the total supply.
-     *
-     * Emits a {Transfer} event with `from` set to the zero address.
-     *
-     * Requirements:
-     *
-     * - `account` cannot be the zero address.
-     * - total number of tokens cannot exceed the maximum supply.
+    /**
+     * @dev See {ERC20-_mint}.
      */
-    function _mint(address account, uint256 amount) internal override (ERC20) {
-        require(SafeMath.add(totalSupply(), amount) <= _maximumSupply, "Mint: cannot mint more than maximum supply");
-        ERC20._mint(account, amount);
+    function _mint(address account, uint256 amount) internal override (ERC20Capped, ERC20) {
+        ERC20Capped._mint(account, amount);
     }
 }
